@@ -1,1 +1,1 @@
-# react-project-init
+# elstar-ts
