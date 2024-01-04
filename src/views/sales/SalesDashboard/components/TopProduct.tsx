@@ -1,14 +1,11 @@
-import Button from '@/components/ui/Button'
 import Card from '@/components/ui/Card'
 import Table from '@/components/ui/Table'
-import Avatar from '@/components/ui/Avatar'
-import {
-    useReactTable,
-    getCoreRowModel,
-    flexRender,
-    createColumnHelper,
-} from '@tanstack/react-table'
-import { FiPackage } from 'react-icons/fi'
+import Radio from '@/components/ui/Radio'
+import {Field, Form, Formik} from 'formik'
+import {FormItem, FormContainer} from '@/components/ui/Form'
+import Input from '@/components/ui/Input'
+import Checkbox from '@/components/ui/Checkbox'
+import DoubleSidedImage from "../../../../components/shared/DoubleSidedImage";
 
 type Product = {
     id: string
@@ -22,90 +19,80 @@ type TopProductProps = {
     className?: string
 }
 
-const { Tr, Td, TBody, THead, Th } = Table
+const {Tr, Td, TBody, THead, Th} = Table
 
-const ProductColumn = ({ row }: { row: Product }) => {
-    const avatar = row.img ? (
-        <Avatar src={row.img} />
-    ) : (
-        <Avatar icon={<FiPackage />} />
-    )
 
-    return (
-        <div className="flex items-center gap-2">
-            {avatar}
-            <span className="font-semibold">{row.name}</span>
-        </div>
-    )
-}
-
-const columnHelper = createColumnHelper<Product>()
-
-const columns = [
-    columnHelper.accessor('name', {
-        header: 'Product',
-        cell: (props) => {
-            const row = props.row.original
-            return <ProductColumn row={row} />
-        },
-    }),
-    columnHelper.accessor('sold', {
-        header: 'Sold',
-    }),
-]
-
-const TopProduct = ({ data = [], className }: TopProductProps) => {
-    const table = useReactTable({
-        data,
-        columns,
-        getCoreRowModel: getCoreRowModel(),
-    })
+const TopProduct = ({data = [], className}: TopProductProps) => {
 
     return (
         <Card className={className}>
-            <div className="flex items-center justify-between mb-4">
-                <h4>Top Selling</h4>
-                <Button size="sm">View Products</Button>
+            <p className="mb-2">Pay with</p>
+            <Radio.Group vertical value={"banana"} className="w-[100%]">
+                <div className="grid gap-4 border-[1px] p-4 rounded-md">
+                    <Radio value="saved">
+                        Save with Bkash
+                    </Radio>
+                </div>
+                <div className="grid grid-cols-3 gap-4 border-[1px] p-4 rounded-md mt-2">
+                    <Radio value="bkash">
+                        Bkash
+                    </Radio>
+                </div>
+                <div className="grid gap-4 border-[1px] p-4 rounded-md mt-2">
+                    <Radio value="master">
+                        Visa / Master / Amex
+                    </Radio>
+                </div>
+            </Radio.Group>
+            <div className="mt-5">
+                <Checkbox defaultChecked className="mb-5">
+                    Get Recharge Receipt by Email
+                </Checkbox>
+                <Formik
+                    initialValues={{
+                        email: '',
+                        userName: '',
+                        password: '',
+                        rememberMe: false,
+                    }}
+                    onSubmit={(values, { resetForm, setSubmitting }) => {
+                        setTimeout(() => {
+                            alert(JSON.stringify(values, null, 2))
+                            setSubmitting(false)
+                            resetForm()
+                        }, 400)
+                    }}
+                >
+                    {({ touched, errors, resetForm }) => (
+                        <Form>
+                            <FormContainer>
+                                <FormItem
+                                    label="Email Address"
+                                >
+                                    <Field
+                                        type="email"
+                                        autoComplete="off"
+                                        name="email"
+                                        placeholder="Enter email address"
+                                        component={Input}
+                                    />
+                                </FormItem>
+                            </FormContainer>
+                        </Form>
+                    )}
+                </Formik>
+                <div className="w-[100%]">
+                    <DoubleSidedImage
+                        src="/img/recharge.jpeg"
+                        darkModeSrc="/img/products/product-1.jpg"
+                        alt="No product found!"
+                        className="w-[100%]"
+                    />
+                </div>
             </div>
-            <Table>
-                <THead>
-                    {table.getHeaderGroups().map((headerGroup) => (
-                        <Tr key={headerGroup.id}>
-                            {headerGroup.headers.map((header) => {
-                                return (
-                                    <Th
-                                        key={header.id}
-                                        colSpan={header.colSpan}
-                                    >
-                                        {flexRender(
-                                            header.column.columnDef.header,
-                                            header.getContext()
-                                        )}
-                                    </Th>
-                                )
-                            })}
-                        </Tr>
-                    ))}
-                </THead>
-                <TBody>
-                    {table.getRowModel().rows.map((row) => {
-                        return (
-                            <Tr key={row.id}>
-                                {row.getVisibleCells().map((cell) => {
-                                    return (
-                                        <Td key={cell.id}>
-                                            {flexRender(
-                                                cell.column.columnDef.cell,
-                                                cell.getContext()
-                                            )}
-                                        </Td>
-                                    )
-                                })}
-                            </Tr>
-                        )
-                    })}
-                </TBody>
-            </Table>
+            <div>
+
+            </div>
         </Card>
     )
 }
